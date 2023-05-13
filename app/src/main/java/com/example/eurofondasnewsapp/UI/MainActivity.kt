@@ -2,6 +2,8 @@ package com.example.eurofondasnewsapp.UI
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.ProgressBar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.eurofondasnewsapp.API.APIInterface
@@ -19,10 +21,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var newsAdapter: NewsAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var recyclerViewNews: RecyclerView
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        progressBar = findViewById(R.id.progressBar)
 
         recyclerViewNews = findViewById(R.id.recyclerViewNews)
         recyclerViewNews.setHasFixedSize(true)
@@ -32,6 +37,8 @@ class MainActivity : AppCompatActivity() {
 
         linearLayoutManager = LinearLayoutManager(this)
         recyclerViewNews.layoutManager = linearLayoutManager
+
+//        progressBar.visibility
 
         getNewsData()
     }
@@ -46,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             .create(APIInterface::class.java)
 
         val retrofitData = retrofitBuilder.fetchData()
+        Log.e(toString(), "$retrofitData")
 
         retrofitData.enqueue(object : Callback<NewsData?> {
             override fun onResponse(call: Call<NewsData?>, response: Response<NewsData?>) {
@@ -55,12 +63,12 @@ class MainActivity : AppCompatActivity() {
                     newsAdapter = NewsAdapter(baseContext, articles)
                     recyclerViewNews.adapter = newsAdapter
                 } else {
-                    // Handle null response body
+                    Log.e(toString(), "Response body null")
                 }
             }
 
             override fun onFailure(call: Call<NewsData?>, t: Throwable) {
-                // Handle failure
+                Log.e(toString(), "${t.message}")
             }
         })
     }
